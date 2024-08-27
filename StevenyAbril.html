@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos para el contenedor */
+        .container {
+            width: 180px;
+            height: 180px;
+            position: relative;
+            background-color: #f0f0f0; /* Color de fondo */
+            margin: 0 auto; /* Centrar el contenedor en la página */
+            border: 2px solid #000; /* Marco alrededor del contenedor */
+            overflow: hidden;
+        }
+
+        /* Contenedor de imágenes en forma de corazón */
+        .corazon {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            transform: rotate(180deg); /* Girar la forma del corazón */
+            transform-origin: center;
+        }
+
+        /* Estilo del marco de las imágenes */
+        .imagen {
+            position: absolute;
+            width: 60px; /* Tamaño de la imagen */
+            height: 60px; /* Tamaño de la imagen */
+            opacity: 0; /* Inicialmente invisibles */
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out, box-shadow 1s ease-in-out; /* Efecto de transición más rápido */
+            border: 1px solid #000; /* Marco alrededor de la imagen más fino */
+            box-sizing: border-box;
+            transform: rotate(180deg); /* Girar las imágenes 180 grados */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Agregar sombra para resaltar */
+        }
+
+        /* Efecto de desvanecimiento y movimiento */
+        .imagen.aparecer {
+            opacity: 1;
+            transform: scale(1.2) rotate(180deg); /* Ligero escalado para resaltar */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7); /* Sombra más intensa al aparecer */
+        }
+
+        /* Estilos para la letra de la canción */
+        .letra {
+            position: absolute;
+            bottom: 20px; /* Ajusta la posición según sea necesario */
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            padding: 5px;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.5;
+            box-sizing: border-box;
+            opacity: 0; /* Inicialmente oculta */
+            transition: opacity 1s ease-in-out; /* Efecto de desvanecimiento */
+            display: none; /* Inicialmente oculta */
+        }
+
+        /* Estilos para los videos */
+        .video-container {
+            position: absolute;
+            width: 120px; /* Ancho del video */
+            height: 120px; /* Alto del video */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Centra el video en el contenedor */
+            overflow: hidden;
+            border: 1px solid red; /* Borde más fino y rojo */
+        }
+
+        .video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Asegura que el video cubra el contenedor */
+        }
+    </style>
+</head>
+<body onclick="Playaudio()">
+
+    <div class="container" id="container">
+        <div class="corazon" id="corazon">
+            <!-- Las imágenes en forma de corazón se agregarán aquí -->
+        </div>
+        <div class="letra" id="letra">
+            <!-- La letra de la canción se actualizará dinámicamente -->
+        </div>
+        <div class="video-container">
+            <video id="videoPlayer" class="video" muted autoplay></video>
+        </div>
+    </div>
+
+    <audio id="audio1" loop>
+        <source src="Ed Sheeran - Perfect.mp3" type="audio/mpeg">
+        <source src="Ed-Sheeran-Perfect.ogg" type="audio/ogg">
+        TU NAVEGADOR NO ES COMPATIBLE
+    </audio>
+
+    <script>
+        function Playaudio() {
+            const audio = document.getElementById("audio1");
+            const letra = document.getElementById("letra");
+
+            // Reproduce el audio
+            audio.play();
+
+            // Muestra el contenedor de la letra y llama a la función para mostrar la letra
+            letra.style.display = 'block'; 
+            mostrarLetra(); 
+        }
+
+        // Array con las rutas de las 30 imágenes
+        const imagenes = [
+            "imagenes/imagen1.jpg",
+            "imagenes/imagen2.jpg",
+            "imagenes/imagen3.jpg",
+            "imagenes/imagen4.jpg",
+            "imagenes/imagen5.jpg",
+            "imagenes/imagen6.jpg",
+            "imagenes/imagen7.jpg",
+            "imagenes/imagen8.jpg",
+            "imagenes/imagen9.jpg",
+            "imagenes/imagen10.jpg",
+            "imagenes/imagen11.jpg",
+            "imagenes/imagen12.jpg",
+            "imagenes/imagen13.jpg",
+            "imagenes/imagen14.jpg",
+            "imagenes/imagen15.jpg",
+            "imagenes/imagen16.jpg",
+            "imagenes/imagen17.jpg",
+            "imagenes/imagen18.jpg",
+            "imagenes/imagen19.jpg",
+            "imagenes/imagen20.jpg",
+            "imagenes/imagen21.jpg",
+            "imagenes/imagen22.jpg",
+            "imagenes/imagen23.jpg",
+            "imagenes/imagen24.jpg",
+            "imagenes/imagen25.jpg",
+            "imagenes/imagen26.jpg",
+            "imagenes/imagen27.jpg",
+            "imagenes/imagen28.jpg",
+            "imagenes/imagen29.jpg",
+            "imagenes/imagen30.jpg"
+        ];
+
+        // Función para generar posiciones en forma de corazón alrededor del borde del contenedor
+        function generarPosicionesCorazon(numImagenes) {
+            const posiciones = [];
+            const contenedor = document.querySelector('.corazon');
+            const tamañoImagen = 30; // Tamaño de la imagen
+            const radio = (contenedor.offsetWidth / 2.4) - tamañoImagen / 2; // Radio máximo para la rotación
+
+            for (let i = 0; i < numImagenes; i++) {
+                let x, y;
+
+                // Generar posiciones en forma de corazón
+                const t = i / numImagenes * (2 * Math.PI); // Ángulo para la distribución
+                const radioCorazon = radio + (radio * 0.3) * Math.sin(3 * t); // Ajusta el tamaño del corazón
+                x = radioCorazon * Math.cos(t);
+                y = radioCorazon * Math.sin(t);
+
+                // Ajustar la posición para que esté en el borde del contenedor
+                x += contenedor.offsetWidth / 2 - tamañoImagen / 2;
+                y += contenedor.offsetHeight / 2 - tamañoImagen / 2;
+
+                posiciones.push({ x, y });
+            }
+
+            return posiciones;
+        }
+
+        // Función para generar y mostrar las imágenes
+        function generarImagenes() {
+            const corazon = document.getElementById('corazon');
+            const posiciones = generarPosicionesCorazon(imagenes.length);
+
+            imagenes.forEach((src, i) => {
+                const img = document.createElement("img");
+                img.className = "imagen";
+                img.src = src;
+                img.style.left = `${posiciones[i].x}px`;
+                img.style.top = `${posiciones[i].y}px`;
+
+                corazon.appendChild(img);
+
+                // Agrega el efecto de aparición
+                setTimeout(() => {
+                    img.classList.add("aparecer");
+                }, i * 50); // Aparecer más rápido
+
+                // Elimina la imagen después de 1 minuto
+                setTimeout(() => {
+                    img.classList.remove("aparecer");
+                    img.remove();
+                }, 60000); // Duración total para cada imagen (1m)
+            });
+
+            // Mostrar imágenes en ciclo continuo
+            setInterval(() => {
+                corazon.innerHTML = ''; // Limpiar imágenes anteriores
+                generarImagenes(); // Generar nuevas imágenes
+            }, 60000); // Repetir el ciclo cada 1 minuto
+        }
+
+        // Llama a la función para generar las imágenes
+        generarImagenes();
+
+        // Letra de la canción con los tiempos correspondientes
+        const letras = [
+            { tiempo: 0, texto: "I found a love for me" },
+            { tiempo: 8000, texto: "Darling, just dive right in and follow my lead" },
+            { tiempo: 17000, texto: "Well, I found a girl, beautiful and sweet" },
+            { tiempo: 24000, texto: "I never knew you were the someone waiting for me" },
+            { tiempo: 31000, texto: "Cause we were just kids when we fell in love" },
+            { tiempo: 36000, texto: "Not knowing what it was, I will not give you up this time" },
+            { tiempo: 47000, texto: "But darling, just kiss me slow, your heart is all I own" },
+            { tiempo: 52000, texto: "And in your eyes, you're holding mine" },
+            { tiempo: 62000, texto: "Baby, I'm dancing in the dark with you between my arms" },
+            { tiempo: 72000, texto: "Barefoot on the grass, listening to our favorite song" },
+            { tiempo: 80000, texto: "When you said you looked a mess, I whispered underneath my breath" },
+            { tiempo: 89000, texto: "But you heard it, darling, you look perfect tonight" },
+            { tiempo: 95000, texto: "Well, I found a woman, stronger than anyone I know" },
+            { tiempo: 108000, texto: "She shares my dreams, I hope that someday I'll share her home" },
+            { tiempo: 120000, texto: "I found a love, to carry more than just my secrets" },
+            { tiempo: 133000, texto: "To carry love, to carry children of our own" },
+            { tiempo: 145000, texto: "We are still kids, but we're so in love" },
+            { tiempo: 158000, texto: "Fighting against all odds, I know we'll be alright this time" },
+            { tiempo: 171000, texto: "Darling, just hold my hand, be my girl, I'll be your man" },
+            { tiempo: 184000, texto: "I see my future in your eyes" },
+            { tiempo: 197000, texto: "Baby, I'm dancing in the dark with you between my arms" },
+            { tiempo: 210000, texto: "Barefoot on the grass, listening to our favorite song" },
+            { tiempo: 223000, texto: "When I saw you in that dress, looking so beautiful" },
+            { tiempo: 236000, texto: "I don't deserve this, darling, you look perfect tonight" },
+            { tiempo: 250000, texto: "Baby, I'm dancing in the dark with you between my arms" },
+            { tiempo: 263000, texto: "Barefoot on the grass, listening to our favorite song" },
+            { tiempo: 276000, texto: "When I saw you in that dress, looking so beautiful" },
+            { tiempo: 289000, texto: "I don't deserve this, darling, you look perfect tonight" }
+        ];
+
+        // Función para mostrar la letra en el tiempo correcto
+        function mostrarLetra() {
+            const audio = document.getElementById("audio1");
+            const letra = document.getElementById("letra");
+
+            audio.ontimeupdate = function() {
+                const tiempoActual = audio.currentTime * 1000; // Convertir a milisegundos
+
+                letras.forEach((linea) => {
+                    if (tiempoActual >= linea.tiempo && tiempoActual < (linea.tiempo + 8000)) { // Ajusta el tiempo de visualización
+                        letra.textContent = linea.texto;
+                        letra.style.opacity = 1;
+                    }
+                });
+
+                if (tiempoActual > letras[letras.length - 1].tiempo + 8000) { // Al final de la canción
+                    letra.style.opacity = 0;
+                }
+            };
+        }
+
+        // Función para cambiar los videos secuencialmente
+        function cambiarVideo() {
+            const videoPlayer = document.getElementById('videoPlayer');
+            const videos = ['video1.mp4', 'video2.mp4', 'video3.mp4', 'video4.mp4', 'video5.mp4', 'video6.mp4', 'video7.mp4'];
+            let videoIndex = 0;
+
+            videoPlayer.src = videos[videoIndex];
+            videoPlayer.play();
+
+            videoPlayer.onended = function() {
+                videoIndex = (videoIndex + 1) % videos.length; // Cambia al siguiente video
+                videoPlayer.src = videos[videoIndex];
+                videoPlayer.play();
+            };
+        }
+
+        // Llama a la función para cambiar los videos secuencialmente
+        cambiarVideo();
+    </script>
+</body>
+</html>
+
